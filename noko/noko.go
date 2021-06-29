@@ -4,8 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"log"
 	"net/http"
 	"time"
+
+	"github.com/spf13/viper"
 )
 
 const (
@@ -18,7 +21,9 @@ type Client struct {
 	HTTPClient *http.Client
 }
 
-func NewClient(apiKey string) *Client {
+func NewClient() *Client {
+	apiKey := fetchApiKey()
+
 	return &Client{
 		BaseURL: BaseURLV2,
 		apiKey:  apiKey,
@@ -71,4 +76,23 @@ func (c *Client) send(ctx context.Context, req *http.Request) error {
 	}
 
 	return nil
+}
+
+func fetchApiKey() string {
+	env_key := viper.GetString("NOKO_API_KEY")
+	cnf_key := viper.GetString("api_key")
+
+	if env_key != "" {
+		return env_key
+	}
+
+	if cnf_key != "" {
+		return cnf_key
+	}
+
+	log.Fatal(`
+	Please set enviromental variable NOKO_API_KEY or create ~/nina.yml with api_key
+	`)
+
+	return ""
 }

@@ -6,76 +6,94 @@ import (
 	"fmt"
 	"log"
 	"nina/noko"
-	"os"
 
 	"github.com/schollz/closestmatch"
 	"github.com/spf13/cobra"
 )
 
-var listTimersCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List all timers",
-	Run: func(cmd *cobra.Command, args []string) {
-		client := noko.NewClient(os.Getenv("NOKO_API_KEY"))
+func NewTimerCmd() *cobra.Command {
+	rootCmd := &cobra.Command{
+		Use:     "timers",
+		Aliases: []string{"timer"},
+	}
 
-		ctx := context.Background()
-		timers, err := client.GetTimers(ctx)
+	listCmd := &cobra.Command{
+		Use:   "list",
+		Short: "List all timers",
+		Run: func(cmd *cobra.Command, args []string) {
+			client := noko.NewClient()
 
-		if err != nil {
-			log.Fatal(err)
-		}
+			ctx := context.Background()
+			timers, err := client.GetTimers(ctx)
 
-		for _, timer := range timers {
-			minutes := timer.Seconds / 60
+			if err != nil {
+				log.Fatal(err)
+			}
 
-			fmt.Printf("%-30s %2d minutes, %s\n", timer.Project.Name, minutes, timer.State)
-			fmt.Printf("%s\n", timer.URL)
-		}
-	},
-}
+			for _, timer := range timers {
+				minutes := timer.Seconds / 60
+				fmt.Printf("%-30s %2d minutes, %s\n", timer.Project.Name, minutes, timer.State)
+			}
+		},
+	}
 
-var startTimerCmd = &cobra.Command{
-	Use:   "start [name of timer]",
-	Short: "Start a timer",
-	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		timer, err := timerFromName(args[0])
-		if err != nil {
-			log.Fatal(err)
-		}
+	pauseCmd := &cobra.Command{
+		Use:   "pause",
+		Short: "Pause active timer",
+		Run: func(cmd *cobra.Command, args []string) {
+			client := noko.NewClient()
 
-		client := noko.NewClient(os.Getenv("NOKO_API_KEY"))
+			ctx := context.Background()
+			timers, err := client.GetTimers(ctx)
 
-		ctx := context.Background()
-		err = client.StartTimer(ctx, timer)
-		if err != nil {
-			log.Fatal(err)
-		}
-	},
-}
+			if err != nil {
+				log.Fatal(err)
+			}
 
-var pauseTimerCmd = &cobra.Command{
-	Use:   "pause [name of timer]",
-	Short: "Pause a timer",
-	Args:  cobra.MinimumNArgs(1),
-	Run: func(cmd *cobra.Command, args []string) {
-		timer, err := timerFromName(args[0])
-		if err != nil {
-			log.Fatal(err)
-		}
+			for _, timer := range timers {
+				if timer.State == "running" {
+					client := noko.NewClient()
 
-		client := noko.NewClient(os.Getenv("NOKO_API_KEY"))
+					ctx := context.Background()
+					err = client.PauseTimer(ctx, &timer)
 
-		ctx := context.Background()
-		err = client.PauseTimer(ctx, timer)
-		if err != nil {
-			log.Fatal(err)
-		}
-	},
+					if err != nil {
+						log.Fatal(err)
+					}
+				}
+			}
+		},
+	}
+
+	startCmd := &cobra.Command{
+		Use:   "start [name of timer]",
+		Short: "Start a timer",
+		Args:  cobra.MinimumNArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			timer, err := timerFromName(args[0])
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			client := noko.NewClient()
+
+			ctx := context.Background()
+			err = client.StartTimer(ctx, timer)
+			if err != nil {
+				log.Fatal(err)
+			}
+		},
+	}
+
+	rootCmd.AddCommand(listCmd)
+	rootCmd.AddCommand(pauseCmd)
+	rootCmd.AddCommand(startCmd)
+
+	return rootCmd
 }
 
 func timerFromName(name string) (*noko.Timer, error) {
-	client := noko.NewClient(os.Getenv("NOKO_API_KEY"))
+	client := noko.NewClient()
 
 	ctx := context.Background()
 	timers, err := client.GetTimers(ctx)

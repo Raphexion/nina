@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -12,7 +10,7 @@ var (
 	cfgFile string
 
 	rootCmd = &cobra.Command{
-		Use:   "wh",
+		Use:   "nina",
 		Short: "time keeping at Wise Home",
 		Long:  "A commandline client to help register time with Noko",
 	}
@@ -27,9 +25,7 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
 
 	// Add the individual commands
-	rootCmd.AddCommand(listTimersCmd)
-	rootCmd.AddCommand(pauseTimerCmd)
-	rootCmd.AddCommand(startTimerCmd)
+	rootCmd.AddCommand(NewTimerCmd())
 }
 
 func initConfig() {
@@ -41,12 +37,9 @@ func initConfig() {
 
 		viper.AddConfigPath(home)
 		viper.SetConfigType("yaml")
-		viper.SetConfigName("wh.yaml")
+		viper.SetConfigName("nina.yaml")
 	}
 
 	viper.AutomaticEnv()
-
-	if err := viper.ReadInConfig(); err == nil {
-		fmt.Println("Using config file:", viper.ConfigFileUsed())
-	}
+	viper.ReadInConfig()
 }
