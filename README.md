@@ -25,6 +25,14 @@ api_key: my-key-1234
 
 ## Usage
 
+### Projects
+
+List all projects:
+
+```
+nina projects list
+```
+
 ### Timers
 
 List all timers:
