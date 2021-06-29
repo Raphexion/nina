@@ -2,6 +2,10 @@
 
 > cli for Noko time management
 
+## Downloading latest release
+
+[download](https://github.com/Raphexion/nina/releases/latest)
+
 ## Configure
 
 Please create a personal api token in Noko (web page).
