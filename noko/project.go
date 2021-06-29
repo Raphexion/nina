@@ -1,6 +1,11 @@
 package noko
 
-import "time"
+import (
+	"context"
+	"fmt"
+	"net/http"
+	"time"
+)
 
 type ProjectSummary struct {
 	ID               int    `json:"id"`
@@ -39,4 +44,19 @@ type Project struct {
 	MergeURL          string        `json:"merge_url"`
 	ArchiveURL        string        `json:"archive_url"`
 	UnarchiveURL      string        `json:"unarchive_url"`
+}
+
+func (c *Client) GetProjects(ctx context.Context) ([]Project, error) {
+	req, err := http.NewRequest("GET", fmt.Sprintf("%s/projects", c.BaseURL), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var projects []Project
+	err = c.sendRequest(ctx, req, &projects)
+	if err != nil {
+		return nil, err
+	}
+
+	return projects, nil
 }
