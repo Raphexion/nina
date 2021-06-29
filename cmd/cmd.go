@@ -14,6 +14,8 @@ var (
 		Short: "CLI to interact with Noko time tracking",
 		Long:  "A commandline client written in golang to help interact with Noko time tracker",
 	}
+
+	CurrentUser bool
 )
 
 func Execute() error {
@@ -23,10 +25,12 @@ func Execute() error {
 func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/nina.yaml)")
+	rootCmd.PersistentFlags().BoolVarP(&CurrentUser, "me", "", false, "only related to me (current user)")
 
 	// Add the individual commands
 	rootCmd.AddCommand(NewTimerCmd())
 	rootCmd.AddCommand(NewProjectCmd())
+	rootCmd.AddCommand(NewEntryCmd())
 }
 
 func initConfig() {
