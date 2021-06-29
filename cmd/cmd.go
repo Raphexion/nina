@@ -11,8 +11,8 @@ var (
 
 	rootCmd = &cobra.Command{
 		Use:   "nina",
-		Short: "time keeping at Wise Home",
-		Long:  "A commandline client to help register time with Noko",
+		Short: "CLI to interact with Noko time tracking",
+		Long:  "A commandline client written in golang to help interact with Noko time tracker",
 	}
 )
 
@@ -22,7 +22,7 @@ func Execute() error {
 
 func init() {
 	cobra.OnInitialize(initConfig)
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.cobra.yaml)")
+	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/nina.yaml)")
 
 	// Add the individual commands
 	rootCmd.AddCommand(NewTimerCmd())
