@@ -26,6 +26,7 @@ func init() {
 
 	// Add the individual commands
 	rootCmd.AddCommand(NewTimerCmd())
+	rootCmd.AddCommand(NewProjectCmd())
 }
 
 func initConfig() {
