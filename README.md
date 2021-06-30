@@ -1,10 +1,14 @@
-# Nina
+```
+ _   _ _
+| \ | (_)_ __   __ _
+|  \| | | '_ \ / _` | - A cli for the NOKO Time Tracking Software
+| |\  | | | | | (_| |
+|_| \_|_|_| |_|\__,_|
+```
 
-> cli for Noko time management
+## Download
 
-## Downloading latest release
-
-[download](https://github.com/Raphexion/nina/releases/latest)
+[Latest binaries and packages](https://github.com/Raphexion/nina/releases/latest)
 
 ## Configure
 
