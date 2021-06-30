@@ -39,6 +39,8 @@ func (c *Client) sendRequest(ctx context.Context, req *http.Request, v interface
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
 	req.Header.Set("X-NokoToken", c.apiKey)
+	req.Header.Set("User-Agent", "Nina/v0.1")
+
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
@@ -63,6 +65,7 @@ func (c *Client) send(ctx context.Context, req *http.Request) error {
 	req = req.WithContext(ctx)
 
 	req.Header.Set("X-NokoToken", c.apiKey)
+	req.Header.Set("User-Agent", "Nina/v0.1")
 
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
