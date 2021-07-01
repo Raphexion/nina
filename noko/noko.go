@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -41,7 +42,6 @@ func (c *Client) sendRequest(ctx context.Context, req *http.Request, v interface
 	req.Header.Set("X-NokoToken", c.apiKey)
 	req.Header.Set("User-Agent", "Nina/v0.1")
 
-
 	res, err := c.HTTPClient.Do(req)
 	if err != nil {
 		return err
@@ -50,7 +50,7 @@ func (c *Client) sendRequest(ctx context.Context, req *http.Request, v interface
 	defer res.Body.Close()
 
 	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusBadRequest {
-		return errors.New("unable to get timers")
+		return errors.New("unable to sendRequest")
 	}
 
 	err = json.NewDecoder(res.Body).Decode(v)
@@ -64,6 +64,8 @@ func (c *Client) sendRequest(ctx context.Context, req *http.Request, v interface
 func (c *Client) send(ctx context.Context, req *http.Request) error {
 	req = req.WithContext(ctx)
 
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/json")
 	req.Header.Set("X-NokoToken", c.apiKey)
 	req.Header.Set("User-Agent", "Nina/v0.1")
 
@@ -74,8 +76,10 @@ func (c *Client) send(ctx context.Context, req *http.Request) error {
 
 	defer res.Body.Close()
 
+	fmt.Println(res.StatusCode)
+
 	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusBadRequest {
-		return errors.New("unable to get timers")
+		return errors.New("unable to send")
 	}
 
 	return nil
