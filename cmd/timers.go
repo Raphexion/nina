@@ -48,9 +48,9 @@ func NewTimerCmd() *cobra.Command {
 		},
 	}
 
-	startCmd := &cobra.Command{
-		Use:   "start [name of timer]",
-		Short: "Start a timer",
+	unpauseCmd := &cobra.Command{
+		Use:   "unpause [name of timer]",
+		Short: "Unpause a paused timer",
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
 			timer, err := mid.TimerWithName(args[0])
@@ -90,10 +90,25 @@ func NewTimerCmd() *cobra.Command {
 		},
 	}
 
+	createCmd := &cobra.Command{
+		Use:   "create [name of project]",
+		Short: "Create a timer for a project",
+		Args:  cobra.MinimumNArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			timer, err := mid.CreateTimer(args[0])
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			fmt.Printf("Timer created for project %s\n", timer.Project.Name)
+		},
+	}
+
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(pauseCmd)
-	rootCmd.AddCommand(startCmd)
+	rootCmd.AddCommand(unpauseCmd)
 	rootCmd.AddCommand(noteCmd)
+	rootCmd.AddCommand(createCmd)
 
 	return rootCmd
 }
