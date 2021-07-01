@@ -1,13 +1,11 @@
 package cmd
 
 import (
-	"context"
-	"errors"
 	"fmt"
 	"log"
-	"nina/noko"
+	"nina/mid"
+	"strings"
 
-	"github.com/schollz/closestmatch"
 	"github.com/spf13/cobra"
 )
 
@@ -21,10 +19,7 @@ func NewTimerCmd() *cobra.Command {
 		Use:   "list",
 		Short: "List all timers",
 		Run: func(cmd *cobra.Command, args []string) {
-			client := noko.NewClient()
-
-			ctx := context.Background()
-			timers, err := client.GetTimers(ctx)
+			timers, err := mid.GetTimers()
 
 			if err != nil {
 				log.Fatal(err)
@@ -41,26 +36,14 @@ func NewTimerCmd() *cobra.Command {
 		Use:   "pause",
 		Short: "Pause active timer",
 		Run: func(cmd *cobra.Command, args []string) {
-			client := noko.NewClient()
-
-			ctx := context.Background()
-			timers, err := client.GetTimers(ctx)
+			timer, err := mid.GetRunningTimer()
 
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			for _, timer := range timers {
-				if timer.State == "running" {
-					client := noko.NewClient()
-
-					ctx := context.Background()
-					err = client.PauseTimer(ctx, &timer)
-
-					if err != nil {
-						log.Fatal(err)
-					}
-				}
+			if err = mid.PauseTimer(timer); err != nil {
+				log.Fatal(err)
 			}
 		},
 	}
@@ -70,52 +53,47 @@ func NewTimerCmd() *cobra.Command {
 		Short: "Start a timer",
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			timer, err := timerFromName(args[0])
+			timer, err := mid.TimerWithName(args[0])
 			if err != nil {
 				log.Fatal(err)
 			}
 
-			client := noko.NewClient()
+			if err = mid.StartTimer(timer); err != nil {
+				log.Fatal(err)
+			}
 
-			ctx := context.Background()
-			err = client.StartTimer(ctx, timer)
+			fmt.Printf("Started timer for project %s\n", timer.Project.Name)
+		},
+	}
+
+	noteCmd := &cobra.Command{
+		Use:   "note text",
+		Short: "Append a note for the running timer",
+		Run: func(cmd *cobra.Command, args []string) {
+			timer, err := mid.GetRunningTimer()
 			if err != nil {
 				log.Fatal(err)
 			}
+
+			var text string
+			if timer.Description == "" {
+				text = strings.Join(args, " ")
+			} else {
+				text = timer.Description + ". " + strings.Join(args, " ")
+			}
+
+			if err = mid.SetDescription(text); err != nil {
+				log.Fatal(err)
+			}
+
+			fmt.Printf("Updated note for project %s\n", timer.Project.Name)
 		},
 	}
 
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(pauseCmd)
 	rootCmd.AddCommand(startCmd)
+	rootCmd.AddCommand(noteCmd)
 
 	return rootCmd
-}
-
-func timerFromName(name string) (*noko.Timer, error) {
-	client := noko.NewClient()
-
-	ctx := context.Background()
-	timers, err := client.GetTimers(ctx)
-
-	if err != nil {
-		return nil, err
-	}
-
-	var wordsToTest []string
-	for _, timer := range timers {
-		wordsToTest = append(wordsToTest, timer.Project.Name)
-	}
-	bagSizes := []int{2}
-	cm := closestmatch.New(wordsToTest, bagSizes)
-
-	bestName := cm.Closest(name)
-
-	for _, timer := range timers {
-		if timer.Project.Name == bestName {
-			return &timer, nil
-		}
-	}
-
-	return nil, errors.New("unable to find a timer")
 }
