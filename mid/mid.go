@@ -47,6 +47,17 @@ func LogTimer(timer *noko.Timer) error {
 	return client.LogTimer(ctx, timer)
 }
 
+func CreateTimer(projectName string) (*noko.Timer, error) {
+	project, err := ProjectWithName(projectName)
+	if err != nil {
+		return nil, err
+	}
+
+	client := noko.NewClient()
+	ctx := context.Background()
+	return client.CreateTimerForProject(ctx, project)
+}
+
 func TimerWithName(name string) (*noko.Timer, error) {
 	timers, err := GetTimers()
 
@@ -81,4 +92,35 @@ func SetDescription(description string) error {
 	client := noko.NewClient()
 	ctx := context.Background()
 	return client.EditTimer(ctx, timer, description)
+}
+
+func GetProjects() ([]noko.Project, error) {
+	client := noko.NewClient()
+	ctx := context.Background()
+	return client.GetProjects(ctx)
+}
+
+func ProjectWithName(name string) (*noko.Project, error) {
+	projects, err := GetProjects()
+
+	if err != nil {
+		return nil, err
+	}
+
+	var wordsToTest []string
+	for _, project := range projects {
+		wordsToTest = append(wordsToTest, project.Name)
+	}
+
+	bagSizes := []int{2}
+	cm := closestmatch.New(wordsToTest, bagSizes)
+	bestName := cm.Closest(name)
+
+	for _, project := range projects {
+		if project.Name == bestName {
+			return &project, nil
+		}
+	}
+
+	return nil, errors.New("unable to find a timer")
 }
