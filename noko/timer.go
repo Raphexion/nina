@@ -112,3 +112,18 @@ func (c *Client) EditTimer(ctx context.Context, timer *Timer, description string
 
 	return nil
 }
+
+func (c *Client) CreateTimerForProject(ctx context.Context, project *Project) (*Timer, error) {
+	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/timer/start", project.URL), nil)
+	if err != nil {
+		return nil, err
+	}
+
+	timer := &Timer{}
+	err = c.sendRequest(ctx, req, timer)
+	if err != nil {
+		return nil, err
+	}
+
+	return timer, nil
+}

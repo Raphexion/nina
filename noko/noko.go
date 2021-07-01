@@ -4,7 +4,6 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"log"
 	"net/http"
 	"time"
@@ -75,8 +74,6 @@ func (c *Client) send(ctx context.Context, req *http.Request) error {
 	}
 
 	defer res.Body.Close()
-
-	fmt.Println(res.StatusCode)
 
 	if res.StatusCode < http.StatusOK || res.StatusCode >= http.StatusBadRequest {
 		return errors.New("unable to send")
