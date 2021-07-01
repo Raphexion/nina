@@ -1,7 +1,9 @@
 package noko
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -68,6 +70,37 @@ func (c *Client) StartTimer(ctx context.Context, timer *Timer) error {
 
 func (c *Client) PauseTimer(ctx context.Context, timer *Timer) error {
 	req, err := http.NewRequest("PUT", timer.PauseURL, nil)
+	if err != nil {
+		return err
+	}
+
+	err = c.send(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Client) LogTimer(ctx context.Context, timer *Timer) error {
+	req, err := http.NewRequest("PUT", timer.LogURL, nil)
+	if err != nil {
+		return err
+	}
+
+	err = c.send(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (c *Client) EditTimer(ctx context.Context, timer *Timer, description string) error {
+	values := map[string]string{"description": description}
+	jsonValue, _ := json.Marshal(values)
+
+	req, err := http.NewRequest("PUT", timer.URL, bytes.NewBuffer(jsonValue))
 	if err != nil {
 		return err
 	}
