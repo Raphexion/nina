@@ -58,6 +58,12 @@ func CreateTimer(projectName string) (*noko.Timer, error) {
 	return client.CreateTimerForProject(ctx, project)
 }
 
+func DeleteTimer(timer *noko.Timer) error {
+	client := noko.NewClient()
+	ctx := context.Background()
+	return client.DeleteTimer(ctx, timer)
+}
+
 func TimerWithName(name string) (*noko.Timer, error) {
 	timers, err := GetTimers()
 
