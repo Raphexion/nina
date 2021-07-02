@@ -127,3 +127,14 @@ func (c *Client) CreateTimerForProject(ctx context.Context, project *Project) (*
 
 	return timer, nil
 }
+
+func (c *Client) DeleteTimer(ctx context.Context, timer *Timer) error {
+	project := timer.Project
+	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/timer", project.URL), nil)
+
+	if err != nil {
+		return err
+	}
+
+	return c.send(ctx, req)
+}
