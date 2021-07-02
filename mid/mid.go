@@ -75,7 +75,10 @@ func TimerWithName(name string) (*noko.Timer, error) {
 		alternatives = append(alternatives, timer.Project.Name)
 	}
 
-	bestName := utils.ClosestMatch(name, alternatives)
+	bestName, err := utils.ClosestMatch(name, alternatives)
+	if err != nil {
+		return nil, err
+	}
 
 	for _, timer := range timers {
 		if timer.Project.Name == bestName {
@@ -115,7 +118,10 @@ func ProjectWithName(name string) (*noko.Project, error) {
 		alternatives = append(alternatives, project.Name)
 	}
 
-	bestName := utils.ClosestMatch(name, alternatives)
+	bestName, err := utils.ClosestMatch(name, alternatives)
+	if err != nil {
+		return nil, err
+	}
 
 	for _, project := range projects {
 		if project.Name == bestName {

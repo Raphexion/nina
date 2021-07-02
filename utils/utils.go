@@ -1,20 +1,33 @@
 package utils
 
-import "github.com/agext/levenshtein"
+import (
+	"errors"
 
-func ClosestMatch(name string, alternatives []string) string {
-	var best_match = ""
-	var best_score = 0.0
+	"github.com/agext/levenshtein"
+)
+
+func ClosestMatch(name string, alternatives []string) (string, error) {
+	params := levenshtein.NewParams()
+
+	best_name := ""
+	curr_best_score := 0.0
+	next_best_score := 0.0
 
 	for _, alternative := range alternatives {
-		params := levenshtein.NewParams()
-
 		score := levenshtein.Similarity(name, alternative, params)
-		if score > best_score {
-			best_match = alternative
-			best_score = score
+
+		if score >= curr_best_score {
+			best_name = alternative
+			next_best_score = curr_best_score
+			curr_best_score = score
+		} else if score >= next_best_score {
+			next_best_score = score
 		}
 	}
 
-	return best_match
+	if curr_best_score > next_best_score*1.5 {
+		return best_name, nil
+	}
+
+	return "", errors.New("unable to pick out best match")
 }
