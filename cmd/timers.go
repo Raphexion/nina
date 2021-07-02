@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"nina/mid"
+	"nina/noko"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -45,6 +46,8 @@ func NewTimerCmd() *cobra.Command {
 			if err = mid.PauseTimer(timer); err != nil {
 				log.Fatal(err)
 			}
+
+			outputTimerWithName(timer.Project.Name)
 		},
 	}
 
@@ -62,7 +65,7 @@ func NewTimerCmd() *cobra.Command {
 				log.Fatal(err)
 			}
 
-			fmt.Printf("Started timer for project %s\n", timer.Project.Name)
+			outputTimerWithName(timer.Project.Name)
 		},
 	}
 
@@ -86,7 +89,7 @@ func NewTimerCmd() *cobra.Command {
 				log.Fatal(err)
 			}
 
-			fmt.Printf("Updated note for project %s\n", timer.Project.Name)
+			outputTimerWithName(timer.Project.Name)
 		},
 	}
 
@@ -100,7 +103,51 @@ func NewTimerCmd() *cobra.Command {
 				log.Fatal(err)
 			}
 
-			fmt.Printf("Timer created for project %s\n", timer.Project.Name)
+			outputTimerWithName(timer.Project.Name)
+		},
+	}
+
+	logCmd := &cobra.Command{
+		Use:   "log [name of the project]",
+		Short: "Log and finish timer for a given project",
+		Args:  cobra.MinimumNArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			timer, err := mid.TimerWithName(args[0])
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			if err = mid.LogTimer(timer); err != nil {
+				log.Fatal(err)
+			}
+
+			timer.State = "finished"
+			outputTimer(timer)
+		},
+	}
+
+	deleteCmd := &cobra.Command{
+		Use:   "delete [name of the project]",
+		Short: "Delete a timer",
+		Args:  cobra.MinimumNArgs(1),
+		Run: func(cmd *cobra.Command, args []string) {
+			timer, err := mid.TimerWithName(args[0])
+			if err != nil {
+				log.Fatal(err)
+			}
+
+			doDelete := promptForConfirmation(fmt.Sprintf("Are you sure you want to delete %s", timer.Project.Name))
+
+			if !doDelete {
+				return
+			}
+
+			if err = mid.DeleteTimer(timer); err != nil {
+				log.Fatal(err)
+			}
+
+			timer.State = "deleted"
+			outputTimer(timer)
 		},
 	}
 
@@ -109,6 +156,23 @@ func NewTimerCmd() *cobra.Command {
 	rootCmd.AddCommand(unpauseCmd)
 	rootCmd.AddCommand(noteCmd)
 	rootCmd.AddCommand(createCmd)
+	rootCmd.AddCommand(logCmd)
+	rootCmd.AddCommand(deleteCmd)
 
 	return rootCmd
+}
+
+// outputTimerWithName retreives the latest state of the timer
+// before outputing it.
+func outputTimerWithName(name string) {
+	timer, err := mid.TimerWithName(name)
+	if err != nil {
+		log.Fatal(err)
+	}
+	outputTimer(timer)
+}
+
+func outputTimer(timer *noko.Timer) {
+	minutes := timer.Seconds / 60
+	fmt.Printf("%-30s %2d minutes, %s: %s\n", timer.Project.Name, minutes, timer.State, timer.Description)
 }
