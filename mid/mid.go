@@ -4,8 +4,7 @@ import (
 	"context"
 	"errors"
 	"nina/noko"
-
-	"github.com/schollz/closestmatch"
+	"nina/utils"
 )
 
 func GetTimers() ([]noko.Timer, error) {
@@ -71,14 +70,12 @@ func TimerWithName(name string) (*noko.Timer, error) {
 		return nil, err
 	}
 
-	var wordsToTest []string
+	var alternatives []string
 	for _, timer := range timers {
-		wordsToTest = append(wordsToTest, timer.Project.Name)
+		alternatives = append(alternatives, timer.Project.Name)
 	}
 
-	bagSizes := []int{2}
-	cm := closestmatch.New(wordsToTest, bagSizes)
-	bestName := cm.Closest(name)
+	bestName := utils.ClosestMatch(name, alternatives)
 
 	for _, timer := range timers {
 		if timer.Project.Name == bestName {
@@ -113,14 +110,12 @@ func ProjectWithName(name string) (*noko.Project, error) {
 		return nil, err
 	}
 
-	var wordsToTest []string
+	var alternatives []string
 	for _, project := range projects {
-		wordsToTest = append(wordsToTest, project.Name)
+		alternatives = append(alternatives, project.Name)
 	}
 
-	bagSizes := []int{2}
-	cm := closestmatch.New(wordsToTest, bagSizes)
-	bestName := cm.Closest(name)
+	bestName := utils.ClosestMatch(name, alternatives)
 
 	for _, project := range projects {
 		if project.Name == bestName {
