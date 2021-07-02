@@ -25,7 +25,7 @@ func ClosestMatch(name string, alternatives []string) (string, error) {
 		}
 	}
 
-	if curr_best_score > next_best_score*1.5 {
+	if curr_best_score > next_best_score*1.1 {
 		return best_name, nil
 	}
 

@@ -17,7 +17,7 @@ func TestClosestMatch(t *testing.T) {
 		{"b", []string{"a", "b"}, "b", ""},
 		{"a", []string{"a", "a"}, "", errText},
 		{"foo", []string{"foobar", "barfoo"}, "", errText},
-		{"foo", []string{"foobar", "barfoo1"}, "", errText},
+		{"foo", []string{"foobar1111", "barfoo1112"}, "", errText},
 	}
 
 	for i, tt := range tests {
