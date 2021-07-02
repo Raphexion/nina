@@ -56,7 +56,8 @@ func NewTimerCmd() *cobra.Command {
 		Short: "Unpause a paused timer",
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			timer, err := mid.TimerWithName(args[0])
+			name := strings.Join(args, "")
+			timer, err := mid.TimerWithName(name)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -98,7 +99,8 @@ func NewTimerCmd() *cobra.Command {
 		Short: "Create a timer for a project",
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			timer, err := mid.CreateTimer(args[0])
+			name := strings.Join(args, " ")
+			timer, err := mid.CreateTimer(name)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -112,7 +114,8 @@ func NewTimerCmd() *cobra.Command {
 		Short: "Log and finish timer for a given project",
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			timer, err := mid.TimerWithName(args[0])
+			name := strings.Join(args, "")
+			timer, err := mid.TimerWithName(name)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -131,7 +134,8 @@ func NewTimerCmd() *cobra.Command {
 		Short: "Delete a timer",
 		Args:  cobra.MinimumNArgs(1),
 		Run: func(cmd *cobra.Command, args []string) {
-			timer, err := mid.TimerWithName(args[0])
+			name := strings.Join(args, " ")
+			timer, err := mid.TimerWithName(name)
 			if err != nil {
 				log.Fatal(err)
 			}
