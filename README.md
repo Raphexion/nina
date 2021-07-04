@@ -12,19 +12,19 @@
 
 ## Configure
 
-Please create a personal api token in Noko (web page).
+Please create a Personal Access Token in Noko (web page).
 
 Either create an environmental variable
 
 ```
-export NOKO_API_KEY="my-key-1234"
+export NOKO_ACCESS_TOKEN="my-key-1234"
 ```
 
 Or, create nina.yaml in your home folder:
 
 ```
 # ~/nina.yaml
-api_key: my-key-1234
+access_token: my-key-1234
 ```
 
 ## Usage

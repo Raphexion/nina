@@ -17,16 +17,16 @@ const (
 
 type Client struct {
 	BaseURL    string
-	apiKey     string
+	accessToken     string
 	HTTPClient *http.Client
 }
 
 func NewClient() *Client {
-	apiKey := fetchApiKey()
+	accessToken := fetchApiKey()
 
 	return &Client{
 		BaseURL: BaseURLV2,
-		apiKey:  apiKey,
+		accessToken:  accessToken,
 		HTTPClient: &http.Client{
 			Timeout: time.Minute,
 		},
@@ -38,7 +38,7 @@ func (c *Client) sendRequest(ctx context.Context, req *http.Request, v interface
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("X-NokoToken", c.apiKey)
+	req.Header.Set("X-NokoToken", c.accessToken)
 	req.Header.Set("User-Agent", "Nina/v0.1")
 
 	res, err := c.HTTPClient.Do(req)
@@ -65,7 +65,7 @@ func (c *Client) send(ctx context.Context, req *http.Request) error {
 
 	req.Header.Set("Content-Type", "application/json")
 	req.Header.Set("Accept", "application/json")
-	req.Header.Set("X-NokoToken", c.apiKey)
+	req.Header.Set("X-NokoToken", c.accessToken)
 	req.Header.Set("User-Agent", "Nina/v0.1")
 
 	res, err := c.HTTPClient.Do(req)
@@ -83,8 +83,8 @@ func (c *Client) send(ctx context.Context, req *http.Request) error {
 }
 
 func fetchApiKey() string {
-	env_key := viper.GetString("NOKO_API_KEY")
-	cnf_key := viper.GetString("api_key")
+	env_key := viper.GetString("NOKO_ACCESS_TOKEN")
+	cnf_key := viper.GetString("access_token")
 
 	if env_key != "" {
 		return env_key
@@ -95,7 +95,7 @@ func fetchApiKey() string {
 	}
 
 	log.Fatal(`
-	Please set enviromental variable NOKO_API_KEY or create ~/nina.yml with api_key
+	Please set enviromental variable NOKO_ACCESS_TOKEN or create ~/nina.yml with access_token
 	`)
 
 	return ""
