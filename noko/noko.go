@@ -12,15 +12,18 @@ import (
 )
 
 const (
+	// BaseURLV2 is the default URL to the Noko API v2
 	BaseURLV2 = "https://api.nokotime.com/v2"
 )
 
+// Client represents the Noko client
 type Client struct {
 	BaseURL     string
 	accessToken string
 	HTTPClient  *http.Client
 }
 
+// NewClient will create a new noko client
 func NewClient() *Client {
 	return &Client{
 		BaseURL:     fetchBaseURL(),
@@ -81,15 +84,15 @@ func (c *Client) send(ctx context.Context, req *http.Request) error {
 }
 
 func fetchAccessToken() string {
-	env_key := viper.GetString("NOKO_ACCESS_TOKEN")
-	cnf_key := viper.GetString("access_token")
+	envKey := viper.GetString("NOKO_ACCESS_TOKEN")
+	cnfKey := viper.GetString("access_token")
 
-	if env_key != "" {
-		return env_key
+	if envKey != "" {
+		return envKey
 	}
 
-	if cnf_key != "" {
-		return cnf_key
+	if cnfKey != "" {
+		return cnfKey
 	}
 
 	log.Fatal(`
@@ -100,15 +103,15 @@ func fetchAccessToken() string {
 }
 
 func fetchBaseURL() string {
-	env_url := viper.GetString("NOKO_BASE_URL")
-	cnf_url := viper.GetString("base_url")
+	envURL := viper.GetString("NOKO_BASE_URL")
+	cnfURL := viper.GetString("base_url")
 
-	if env_url != "" {
-		return env_url
+	if envURL != "" {
+		return envURL
 	}
 
-	if cnf_url != "" {
-		return cnf_url
+	if cnfURL != "" {
+		return cnfURL
 	}
 
 	return BaseURLV2
