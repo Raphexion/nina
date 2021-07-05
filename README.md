@@ -1,10 +1,12 @@
 ```
  _   _ _
 | \ | (_)_ __   __ _
-|  \| | | '_ \ / _` | - A cli for the NOKO Time Tracking Software
-| |\  | | | | | (_| |
+|  \| | | '_ \ / _` |
+| |\  | | | | | (_| | - A cli for the NOKO Time Tracking Software
 |_| \_|_|_| |_|\__,_|
 ```
+
+[![Go Report Card](https://goreportcard.com/badge/github.com/Raphexion/nina)](https://goreportcard.com/report/github.com/Raphexion/nina)
 
 ## Download
 
