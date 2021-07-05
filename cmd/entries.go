@@ -22,7 +22,7 @@ func NewEntryCmd() *cobra.Command {
 			client := noko.NewClient()
 
 			ctx := context.Background()
-			entries, err := client.GetEntries(ctx, CurrentUser)
+			entries, err := client.GetEntries(ctx, false)
 
 			if err != nil {
 				log.Fatal(err)
