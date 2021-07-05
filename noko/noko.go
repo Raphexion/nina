@@ -96,7 +96,7 @@ func fetchAccessToken() string {
 	}
 
 	log.Fatal(`
-	Please set enviromental variable NOKO_ACCESS_TOKEN or create ~/nina.yml with access_token
+	Please set environment variable NOKO_ACCESS_TOKEN or create ~/nina.yml with access_token
 	`)
 
 	return ""
