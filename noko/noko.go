@@ -16,17 +16,15 @@ const (
 )
 
 type Client struct {
-	BaseURL    string
-	accessToken     string
-	HTTPClient *http.Client
+	BaseURL     string
+	accessToken string
+	HTTPClient  *http.Client
 }
 
 func NewClient() *Client {
-	accessToken := fetchApiKey()
-
 	return &Client{
-		BaseURL: BaseURLV2,
-		accessToken:  accessToken,
+		BaseURL:     fetchBaseURL(),
+		accessToken: fetchAccessToken(),
 		HTTPClient: &http.Client{
 			Timeout: time.Minute,
 		},
@@ -82,7 +80,7 @@ func (c *Client) send(ctx context.Context, req *http.Request) error {
 	return nil
 }
 
-func fetchApiKey() string {
+func fetchAccessToken() string {
 	env_key := viper.GetString("NOKO_ACCESS_TOKEN")
 	cnf_key := viper.GetString("access_token")
 
@@ -99,4 +97,19 @@ func fetchApiKey() string {
 	`)
 
 	return ""
+}
+
+func fetchBaseURL() string {
+	env_url := viper.GetString("NOKO_BASE_URL")
+	cnf_url := viper.GetString("base_url")
+
+	if env_url != "" {
+		return env_url
+	}
+
+	if cnf_url != "" {
+		return cnf_url
+	}
+
+	return BaseURLV2
 }
