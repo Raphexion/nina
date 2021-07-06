@@ -7,6 +7,7 @@
 ```
 
 [![Go Report Card](https://goreportcard.com/badge/github.com/Raphexion/nina)](https://goreportcard.com/report/github.com/Raphexion/nina)
+[![codecov.io](https://codecov.io/gh/Raphexion/nina/coverage.svg?branch=master)](https://codecov.io/gh/Raphexion/nina?branch=master)
 
 ## Noko (previously Freckle)
 
