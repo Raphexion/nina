@@ -18,19 +18,19 @@ func NewTimerCmd() *cobra.Command {
 
 	listCmd := &cobra.Command{
 		Use:   "list",
-		Short: "List all timers",
+		Short: "List all project timers",
 		Run:   listCmdFunc,
 	}
 
 	pauseCmd := &cobra.Command{
 		Use:   "pause",
-		Short: "Pause active timer",
+		Short: "Pause active project timer",
 		Run:   pauseCmdFunc,
 	}
 
 	unpauseCmd := &cobra.Command{
-		Use:   "unpause [name of timer]",
-		Short: "Unpause a paused timer",
+		Use:   "unpause [name of project]",
+		Short: "Unpause a paused project timer",
 		Args:  cobra.MinimumNArgs(1),
 		Run:   unpauseCmdFunc,
 	}
@@ -57,7 +57,7 @@ func NewTimerCmd() *cobra.Command {
 
 	deleteCmd := &cobra.Command{
 		Use:   "delete [name of the project]",
-		Short: "Delete a timer",
+		Short: "Delete a timer for a project",
 		Args:  cobra.MinimumNArgs(1),
 		Run:   deleteCmdFunc,
 	}
