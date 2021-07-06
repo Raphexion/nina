@@ -1,5 +1,6 @@
 package noko
 
+// User represents a Noko user
 type User struct {
 	ID              int    `json:"id"`
 	Email           string `json:"email"`

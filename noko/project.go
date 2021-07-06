@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// ProjectSummary represents a abbreviated Noko project struct
 type ProjectSummary struct {
 	ID               int    `json:"id"`
 	Name             string `json:"name"`
@@ -17,6 +18,7 @@ type ProjectSummary struct {
 	URL              string `json:"url"`
 }
 
+// Project represents a Noko project
 type Project struct {
 	ID                int           `json:"id"`
 	Name              string        `json:"name"`
@@ -46,6 +48,7 @@ type Project struct {
 	UnarchiveURL      string        `json:"unarchive_url"`
 }
 
+// GetProjects will get all Noko projects
 func (c *Client) GetProjects(ctx context.Context) ([]Project, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/projects", c.BaseURL), nil)
 	if err != nil {

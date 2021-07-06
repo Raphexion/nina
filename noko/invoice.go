@@ -1,5 +1,6 @@
 package noko
 
+// Invoice represents a Noko invoice
 type Invoice struct {
 	ID          int     `json:"id"`
 	Reference   string  `json:"reference"`

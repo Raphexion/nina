@@ -8,6 +8,8 @@ import (
 	"net/http"
 )
 
+// Timer represents a Noko time struct and is one of the most important
+// structures in Noko and Nina.
 type Timer struct {
 	ID                   int            `json:"id"`
 	State                string         `json:"state"`
@@ -24,6 +26,7 @@ type Timer struct {
 	LogURL               string         `json:"log_url"`
 }
 
+// GetTimers will get all timers from Noko
 func (c *Client) GetTimers(ctx context.Context) ([]Timer, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/timers", c.BaseURL), nil)
 	if err != nil {
@@ -39,6 +42,7 @@ func (c *Client) GetTimers(ctx context.Context) ([]Timer, error) {
 	return timers, nil
 }
 
+// GetTimer will get a specific timer from Noko
 func (c *Client) GetTimer(ctx context.Context, id int) (*Timer, error) {
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/timers/%d", c.BaseURL, id), nil)
 	if err != nil {
@@ -54,6 +58,7 @@ func (c *Client) GetTimer(ctx context.Context, id int) (*Timer, error) {
 	return timer, nil
 }
 
+// StartTimer will start a Noko timer
 func (c *Client) StartTimer(ctx context.Context, timer *Timer) error {
 	req, err := http.NewRequest("PUT", timer.StartURL, nil)
 	if err != nil {
@@ -68,6 +73,7 @@ func (c *Client) StartTimer(ctx context.Context, timer *Timer) error {
 	return nil
 }
 
+// PauseTimer will start a Noko timer
 func (c *Client) PauseTimer(ctx context.Context, timer *Timer) error {
 	req, err := http.NewRequest("PUT", timer.PauseURL, nil)
 	if err != nil {
@@ -82,6 +88,7 @@ func (c *Client) PauseTimer(ctx context.Context, timer *Timer) error {
 	return nil
 }
 
+// LogTimer will log/finish a Noko timer and register the time
 func (c *Client) LogTimer(ctx context.Context, timer *Timer) error {
 	req, err := http.NewRequest("PUT", timer.LogURL, nil)
 	if err != nil {
@@ -96,6 +103,7 @@ func (c *Client) LogTimer(ctx context.Context, timer *Timer) error {
 	return nil
 }
 
+// EditTimer will change the description of a timer.
 func (c *Client) EditTimer(ctx context.Context, timer *Timer, description string) error {
 	values := map[string]string{"description": description}
 	jsonValue, _ := json.Marshal(values)
@@ -113,6 +121,7 @@ func (c *Client) EditTimer(ctx context.Context, timer *Timer, description string
 	return nil
 }
 
+// CreateTimerForProject will create and start a new timer for a project
 func (c *Client) CreateTimerForProject(ctx context.Context, project *Project) (*Timer, error) {
 	req, err := http.NewRequest("PUT", fmt.Sprintf("%s/timer/start", project.URL), nil)
 	if err != nil {
@@ -128,6 +137,7 @@ func (c *Client) CreateTimerForProject(ctx context.Context, project *Project) (*
 	return timer, nil
 }
 
+// DeleteTimer will delete a time without loggin the time.
 func (c *Client) DeleteTimer(ctx context.Context, timer *Timer) error {
 	project := timer.Project
 	req, err := http.NewRequest("DELETE", fmt.Sprintf("%s/timer", project.URL), nil)

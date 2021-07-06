@@ -1,5 +1,6 @@
 package noko
 
+// Participant represents a Noko participant
 type Participant struct {
 	ID              int    `json:"id"`
 	Email           string `json:"email"`

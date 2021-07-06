@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// Entry represents a Noko time entry
 type Entry struct {
 	ID                       int       `json:"id"`
 	Date                     string    `json:"date"`
@@ -30,6 +31,7 @@ type Entry struct {
 	UpdatedAt                time.Time `json:"updated_at"`
 }
 
+// GetEntries will get all entries
 func (c *Client) GetEntries(ctx context.Context, currentUser bool) ([]Entry, error) {
 	url := fmt.Sprintf("%s/entries", c.BaseURL)
 	if currentUser {
