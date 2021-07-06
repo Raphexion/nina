@@ -41,3 +41,26 @@ Or, create nina.yaml in your home folder:
 access_token: my-key-1234
 ```
 
+## Usage
+
+Please use the internal help messages at the command-line for an up-to-date usage. Example:
+
+```sh
+$ nina
+A commandline client written in golang to help interact with Noko time tracker
+
+Usage:
+  nina [command]
+
+Available Commands:
+  entries
+  help        Help about any command
+  projects
+  timers
+
+Flags:
+      --config string   config file (default is $HOME/nina.yaml)
+  -h, --help            help for nina
+
+Use "nina [command] --help" for more information about a command.
+```
