@@ -81,10 +81,7 @@ func listCmdFunc(cmd *cobra.Command, args []string) {
 	}
 
 	for _, timer := range timers {
-		minutes := timer.Seconds / 60
-		hours := minutes / 60
-		minutes -= hours * 60
-		fmt.Printf("%-30s %2dh%2d, %8s: %s\n", timer.Project.Name, hours, minutes, timer.State, timer.Description)
+		outputTimer(&timer)
 	}
 }
 
@@ -194,5 +191,7 @@ func outputTimerWithName(name string) {
 
 func outputTimer(timer *noko.Timer) {
 	minutes := timer.Seconds / 60
-	fmt.Printf("%-30s %2d minutes, %s: %s\n", timer.Project.Name, minutes, timer.State, timer.Description)
+	hours := minutes / 60
+	minutes -= hours * 60
+	fmt.Printf("%-30s %2dh%2d, %8s: %s\n", timer.Project.Name, hours, minutes, timer.State, timer.Description)
 }
