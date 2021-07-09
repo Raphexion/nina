@@ -29,7 +29,7 @@ func NewClient() *Client {
 		BaseURL:     fetchBaseURL(),
 		accessToken: fetchAccessToken(),
 		HTTPClient: &http.Client{
-			Timeout: time.Minute,
+			Timeout: 2 * time.Second,
 		},
 	}
 }
