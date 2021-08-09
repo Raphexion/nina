@@ -28,6 +28,8 @@ This timer will not conflict with Bengt's and Carolina's timers for the same pro
 ## Configure
 
 Please create a Personal Access Token in Noko (web page).
+On the right hand side, open *Connected Apps & API*.
+Then look for *NOKO API* and *Personal Access Tokens*.
 
 Either create an environmental variable
 
