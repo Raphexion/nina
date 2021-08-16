@@ -193,5 +193,5 @@ func outputTimer(timer *noko.Timer) {
 	minutes := timer.Seconds / 60
 	hours := minutes / 60
 	minutes -= hours * 60
-	fmt.Printf("%-30s %2dh%2d, %8s: %s\n", timer.Project.Name, hours, minutes, timer.State, timer.Description)
+	fmt.Printf("%-30s %2dh%02d, %8s: %s\n", timer.Project.Name, hours, minutes, timer.State, timer.Description)
 }
