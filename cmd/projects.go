@@ -29,7 +29,7 @@ func NewProjectCmd() *cobra.Command {
 			}
 
 			for _, project := range projects {
-				fmt.Printf("%-50s %-10d\n", project.Name, project.Minutes)
+				fmt.Printf("%-50s\n", project.Name)
 			}
 		},
 	}
