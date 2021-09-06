@@ -5,6 +5,7 @@ import (
 	"log"
 	"nina/mid"
 	"nina/noko"
+	"nina/utils"
 	"strings"
 
 	"github.com/spf13/cobra"
@@ -62,6 +63,20 @@ func NewTimerCmd() *cobra.Command {
 		Run:   deleteCmdFunc,
 	}
 
+	incCmd := &cobra.Command{
+		Use:   "inc 2h10m",
+		Short: "Increase the running timer",
+		Args:  cobra.MinimumNArgs(1),
+		Run:   incCmdFunc,
+	}
+
+	decCmd := &cobra.Command{
+		Use:   "dec 2h10m",
+		Short: "Decrease the running timer",
+		Args:  cobra.MinimumNArgs(1),
+		Run:   decCmdFunc,
+	}
+
 	rootCmd.AddCommand(listCmd)
 	rootCmd.AddCommand(pauseCmd)
 	rootCmd.AddCommand(unpauseCmd)
@@ -69,6 +84,8 @@ func NewTimerCmd() *cobra.Command {
 	rootCmd.AddCommand(createCmd)
 	rootCmd.AddCommand(logCmd)
 	rootCmd.AddCommand(deleteCmd)
+	rootCmd.AddCommand(incCmd)
+	rootCmd.AddCommand(decCmd)
 
 	return rootCmd
 }
@@ -177,6 +194,40 @@ func deleteCmdFunc(cmd *cobra.Command, args []string) {
 
 	timer.State = "deleted"
 	outputTimer(timer)
+}
+
+func incCmdFunc(cmd *cobra.Command, args []string) {
+	minutes, err := utils.MinutesFromHMFormat(args[0])
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	addOrSubMinutesOnRunningTimer(+minutes)
+}
+
+func decCmdFunc(cmd *cobra.Command, args []string) {
+	minutes, err := utils.MinutesFromHMFormat(args[0])
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	addOrSubMinutesOnRunningTimer(-minutes)
+}
+
+func addOrSubMinutesOnRunningTimer(minutes int) {
+	timer, err := mid.GetRunningTimer()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = mid.AddOrSubTimer(timer, minutes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	outputTimerWithName(timer.Project.Name)
 }
 
 // outputTimerWithName retreives the latest state of the timer
