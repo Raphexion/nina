@@ -100,6 +100,12 @@ func SetDescription(description string) error {
 	return client.EditTimer(ctx, timer, description)
 }
 
+func AddOrSubTimer(timer *noko.Timer, minutes int) error {
+	client := noko.NewClient()
+	ctx := context.Background()
+	return client.AddOrSubTimer(ctx, timer, minutes)
+}
+
 func GetProjects() ([]noko.Project, error) {
 	client := noko.NewClient()
 	ctx := context.Background()
