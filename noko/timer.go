@@ -148,3 +148,22 @@ func (c *Client) DeleteTimer(ctx context.Context, timer *Timer) error {
 
 	return c.send(ctx, req)
 }
+
+// AddOrSubTimer will add or subtract minutes from project timer
+func (c *Client) AddOrSubTimer(ctx context.Context, timer *Timer, minutes int) error {
+	values := map[string]int{"minutes": minutes}
+	jsonValue, _ := json.Marshal(values)
+
+	req, err := http.NewRequest("PUT", timer.AddOrSubtractTimeURL, bytes.NewBuffer(jsonValue))
+
+	if err != nil {
+		return err
+	}
+
+	err = c.send(ctx, req)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
