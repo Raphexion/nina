@@ -106,6 +106,18 @@ func AddOrSubTimer(timer *noko.Timer, minutes int) error {
 	return client.AddOrSubTimer(ctx, timer, minutes)
 }
 
+func PauseRunningTimer() error {
+	timer, _ := GetRunningTimer()
+	if timer != nil {
+		err := PauseTimer(timer)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
 func GetProjects() ([]noko.Project, error) {
 	client := noko.NewClient()
 	ctx := context.Background()

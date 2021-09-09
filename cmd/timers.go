@@ -151,6 +151,11 @@ func noteCmdFunc(cmd *cobra.Command, args []string) {
 }
 
 func createCmdFunc(cmd *cobra.Command, args []string) {
+	err := mid.PauseRunningTimer()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	name := strings.Join(args, " ")
 	timer, err := mid.CreateTimer(name)
 	if err != nil {
