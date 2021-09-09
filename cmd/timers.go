@@ -117,6 +117,11 @@ func pauseCmdFunc(cmd *cobra.Command, args []string) {
 }
 
 func unpauseCmdFunc(cmd *cobra.Command, args []string) {
+	err := mid.PauseRunningTimer()
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	name := strings.Join(args, "")
 	timer, err := mid.TimerWithName(name)
 	if err != nil {
