@@ -43,5 +43,5 @@ func outputEntry(entry *noko.Entry) {
 	minutes := entry.Minutes
 	hours := minutes / 60
 	minutes -= hours * 60
-	fmt.Printf("%s  %10s %2dh%02d:  %s\n", entry.Date, entry.User.FirstName, hours, minutes, entry.Description)
+	fmt.Printf("%s %50s %15s %2dh%02d:  %s\n", entry.Date, entry.Project.Name, entry.User.FirstName, hours, minutes, entry.Description)
 }
