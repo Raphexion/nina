@@ -57,12 +57,17 @@ func MinutesFromHMFormat(input string) (int, error) {
 		return 0, fmt.Errorf("incorrect format: %s. please use 1h23m", input)
 	}
 
+	sign := 1
 	temp := 0
 	minutes := 0
 
 format_parser:
 	for _, ch := range input {
 		switch ch {
+		case '+':
+			sign = +1
+		case '-':
+			sign = -1
 		case 'm':
 			minutes += temp
 			break format_parser
@@ -77,7 +82,7 @@ format_parser:
 	}
 
 	if minutes > 0 {
-		return minutes, nil
+		return sign * minutes, nil
 	} else {
 		return 0, errors.New("incorrect format: zero time. please use 1h23m")
 	}
