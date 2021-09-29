@@ -50,6 +50,8 @@ func TestMinutesFromHMFormat(t *testing.T) {
 		{"1h2m", 62, ""},
 		{"0h3m", 3, ""},
 		{"0h120m", 120, ""},
+		{"+1h23m", 83, ""},
+		{"-1h23m", -83, ""},
 	}
 
 	for i, tt := range tests {

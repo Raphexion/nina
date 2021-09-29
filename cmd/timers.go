@@ -1,12 +1,13 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
 	"log"
 	"nina/mid"
 	"nina/noko"
+	"nina/tui"
 	"nina/utils"
-	"strings"
 
 	"github.com/spf13/cobra"
 )
@@ -20,61 +21,57 @@ func NewTimerCmd() *cobra.Command {
 	listCmd := &cobra.Command{
 		Use:   "list",
 		Short: "List all project timers",
+		Args:  cobra.NoArgs,
 		Run:   listCmdFunc,
 	}
 
 	pauseCmd := &cobra.Command{
 		Use:   "pause",
 		Short: "Pause active project timer",
+		Args:  cobra.NoArgs,
 		Run:   pauseCmdFunc,
 	}
 
 	unpauseCmd := &cobra.Command{
-		Use:   "unpause [name of project]",
+		Use:   "unpause",
 		Short: "Unpause a paused project timer",
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.NoArgs,
 		Run:   unpauseCmdFunc,
 	}
 
 	noteCmd := &cobra.Command{
 		Use:   "note text",
-		Short: "Append a note for the running timer",
+		Short: "Append a note to a timer",
+		Args:  cobra.NoArgs,
 		Run:   noteCmdFunc,
 	}
 
 	createCmd := &cobra.Command{
-		Use:   "create [name of project]",
+		Use:   "create",
 		Short: "Create a timer for a project",
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.NoArgs,
 		Run:   createCmdFunc,
 	}
 
 	logCmd := &cobra.Command{
-		Use:   "log [name of the project]",
+		Use:   "log",
 		Short: "Log and finish timer for a given project",
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.NoArgs,
 		Run:   logCmdFunc,
 	}
 
 	deleteCmd := &cobra.Command{
-		Use:   "delete [name of the project]",
+		Use:   "delete",
 		Short: "Delete a timer for a project",
-		Args:  cobra.MinimumNArgs(1),
+		Args:  cobra.NoArgs,
 		Run:   deleteCmdFunc,
 	}
 
-	incCmd := &cobra.Command{
-		Use:   "inc 2h10m",
-		Short: "Increase the running timer",
-		Args:  cobra.MinimumNArgs(1),
-		Run:   incCmdFunc,
-	}
-
-	decCmd := &cobra.Command{
-		Use:   "dec 2h10m",
-		Short: "Decrease the running timer",
-		Args:  cobra.MinimumNArgs(1),
-		Run:   decCmdFunc,
+	adjustCmd := &cobra.Command{
+		Use:   "adjust",
+		Short: "Adjust the time for a project",
+		Args:  cobra.NoArgs,
+		Run:   adjustCmdFunc,
 	}
 
 	rootCmd.AddCommand(listCmd)
@@ -84,8 +81,7 @@ func NewTimerCmd() *cobra.Command {
 	rootCmd.AddCommand(createCmd)
 	rootCmd.AddCommand(logCmd)
 	rootCmd.AddCommand(deleteCmd)
-	rootCmd.AddCommand(incCmd)
-	rootCmd.AddCommand(decCmd)
+	rootCmd.AddCommand(adjustCmd)
 
 	return rootCmd
 }
@@ -113,17 +109,21 @@ func pauseCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	outputTimerWithName(timer.Project.Name)
+	fmt.Printf("Paused %s\n", timer.Project.Name)
 }
 
 func unpauseCmdFunc(cmd *cobra.Command, args []string) {
-	err := mid.PauseRunningTimer()
+	timers, err := mid.GetTimersWithState("paused")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	name := strings.Join(args, "")
-	timer, err := mid.TimerWithName(name)
+	timer, err := selectATimer("Pick a timer to unpause", timers)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = mid.PauseRunningTimer()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -132,47 +132,64 @@ func unpauseCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	outputTimerWithName(timer.Project.Name)
+	fmt.Printf("Unpaused %s\n", timer.Project.Name)
 }
 
 func noteCmdFunc(cmd *cobra.Command, args []string) {
-	timer, err := mid.GetRunningTimer()
+	timers, err := mid.GetTimers()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	var text string
-	if timer.Description == "" {
-		text = strings.Join(args, " ")
-	} else {
-		text = timer.Description + ". " + strings.Join(args, " ")
-	}
-
-	if err = mid.SetDescription(text); err != nil {
+	timer, err := selectATimer("Pick a timer to unpause", timers)
+	if err != nil {
 		log.Fatal(err)
 	}
 
-	outputTimerWithName(timer.Project.Name)
+	description, err := tui.RunInput("Note", timer.Description, "I worked on ...")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = mid.SetDescription(timer, description)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("New note: %s\n", description)
 }
 
 func createCmdFunc(cmd *cobra.Command, args []string) {
-	err := mid.PauseRunningTimer()
+	projects, err := mid.GetSomeProjects(false)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	name := strings.Join(args, " ")
-	timer, err := mid.CreateTimer(name)
+	project, err := selectAProject("Pick a project", projects)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	outputTimerWithName(timer.Project.Name)
+	err = mid.PauseRunningTimer()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	_, err = mid.CreateTimer(project.Name)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("Created and started timer for project: %s\n", project.Name)
 }
 
 func logCmdFunc(cmd *cobra.Command, args []string) {
-	name := strings.Join(args, "")
-	timer, err := mid.TimerWithName(name)
+	timers, err := mid.GetTimers()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	timer, err := selectATimer("Pick a timer to log", timers)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -186,8 +203,12 @@ func logCmdFunc(cmd *cobra.Command, args []string) {
 }
 
 func deleteCmdFunc(cmd *cobra.Command, args []string) {
-	name := strings.Join(args, " ")
-	timer, err := mid.TimerWithName(name)
+	timers, err := mid.GetTimers()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	timer, err := selectATimer("Pick a timer to log", timers)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -206,48 +227,41 @@ func deleteCmdFunc(cmd *cobra.Command, args []string) {
 	outputTimer(timer)
 }
 
-func incCmdFunc(cmd *cobra.Command, args []string) {
-	minutes, err := utils.MinutesFromHMFormat(args[0])
+func adjustCmdFunc(cmd *cobra.Command, args []string) {
+	timers, err := mid.GetTimers()
 	if err != nil {
 		log.Fatal(err)
-		return
 	}
 
-	addOrSubMinutesOnRunningTimer(+minutes)
+	timer, err := selectATimer("Pick a timer to adjust", timers)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	format, err := tui.RunInput("How much to adjust", "", "-1h23m")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	minutes, err := utils.MinutesFromHMFormat(format)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = addOrSubMinutesOnTimer(timer, minutes)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 }
 
-func decCmdFunc(cmd *cobra.Command, args []string) {
-	minutes, err := utils.MinutesFromHMFormat(args[0])
+func addOrSubMinutesOnTimer(timer *noko.Timer, minutes int) error {
+	err := mid.AddOrSubTimer(timer, minutes)
 	if err != nil {
-		log.Fatal(err)
-		return
+		return err
 	}
 
-	addOrSubMinutesOnRunningTimer(-minutes)
-}
-
-func addOrSubMinutesOnRunningTimer(minutes int) {
-	timer, err := mid.GetRunningTimer()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err = mid.AddOrSubTimer(timer, minutes)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	outputTimerWithName(timer.Project.Name)
-}
-
-// outputTimerWithName retreives the latest state of the timer
-// before outputing it.
-func outputTimerWithName(name string) {
-	timer, err := mid.TimerWithName(name)
-	if err != nil {
-		log.Fatal(err)
-	}
-	outputTimer(timer)
+	return nil
 }
 
 func outputTimer(timer *noko.Timer) {
@@ -255,4 +269,54 @@ func outputTimer(timer *noko.Timer) {
 	hours := minutes / 60
 	minutes -= hours * 60
 	fmt.Printf("%-30s %2dh%02d, %8s: %s\n", timer.Project.Name, hours, minutes, timer.State, timer.Description)
+}
+
+func selectATimer(title string, timers []noko.Timer) (*noko.Timer, error) {
+	if len(timers) == 0 {
+		return nil, errors.New("no timers found")
+	}
+
+	if len(timers) == 1 {
+		return &timers[0], nil
+	}
+
+	choices := make([]string, len(timers))
+
+	var timerIndex int
+
+	for ii, timer := range timers {
+		choices[ii] = timer.Project.Name
+	}
+
+	timerIndex, err := tui.RunTuiSelector(title, choices)
+	if err != nil {
+		return nil, err
+	}
+
+	return &timers[timerIndex], nil
+}
+
+func selectAProject(title string, projects []noko.Project) (*noko.Project, error) {
+	if len(projects) == 0 {
+		return nil, errors.New("no projects found")
+	}
+
+	if len(projects) == 1 {
+		return &projects[0], nil
+	}
+
+	choices := make([]string, len(projects))
+
+	var projectIndex int
+
+	for ii, project := range projects {
+		choices[ii] = project.Name
+	}
+
+	projectIndex, err := tui.RunTuiSelector(title, choices)
+	if err != nil {
+		return nil, err
+	}
+
+	return &projects[projectIndex], nil
 }
