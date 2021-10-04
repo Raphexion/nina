@@ -3,7 +3,6 @@ module nina
 go 1.16
 
 require (
-	github.com/agext/levenshtein v1.2.3
 	github.com/charmbracelet/bubbles v0.9.0
 	github.com/charmbracelet/bubbletea v0.16.0
 	github.com/mitchellh/go-homedir v1.1.0

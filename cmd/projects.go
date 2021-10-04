@@ -1,15 +1,15 @@
 package cmd
 
 import (
-	"context"
 	"fmt"
 	"log"
+	"nina/backend"
 	"nina/noko"
 
 	"github.com/spf13/cobra"
 )
 
-func NewProjectCmd() *cobra.Command {
+func NewProjectCmd(m backend.Backend) *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:     "projects",
 		Aliases: []string{"project"},
@@ -18,23 +18,26 @@ func NewProjectCmd() *cobra.Command {
 	listCmd := &cobra.Command{
 		Use:   "list",
 		Short: "List all projects",
-		Run: func(cmd *cobra.Command, args []string) {
-			client := noko.NewClient()
-
-			ctx := context.Background()
-			projects, err := client.GetProjects(ctx)
-
-			if err != nil {
-				log.Fatal(err)
-			}
-
-			for _, project := range projects {
-				fmt.Printf("%-50s\n", project.Name)
-			}
-		},
+		Run:   BackendRunCmd(m, listProjectsCmd),
 	}
 
 	rootCmd.AddCommand(listCmd)
 
 	return rootCmd
+}
+
+func listProjectsCmd(m backend.Backend) {
+	projects, err := m.GetProjects()
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, project := range projects {
+		outputProject(m, &project)
+	}
+}
+
+func outputProject(m backend.Backend, project *noko.Project) {
+	fmt.Fprintf(m, "%-50s\n", project.Name)
 }

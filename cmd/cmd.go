@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"log"
+	"nina/backend"
 	"os"
 	"strings"
 
@@ -14,6 +15,8 @@ import (
 
 var (
 	cfgFile string
+
+	back backend.Backend
 
 	rootCmd = &cobra.Command{
 		Use:   "nina",
@@ -30,10 +33,13 @@ func init() {
 	cobra.OnInitialize(initConfig)
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/nina.yaml)")
 
+	// Use the real noko backend by default
+	back = &backend.RealBackend{}
+
 	// Add the individual commands
-	rootCmd.AddCommand(NewTimerCmd())
-	rootCmd.AddCommand(NewProjectCmd())
-	rootCmd.AddCommand(NewEntryCmd())
+	rootCmd.AddCommand(NewTimerCmd(back))
+	rootCmd.AddCommand(NewProjectCmd(back))
+	rootCmd.AddCommand(NewEntryCmd(back))
 }
 
 func initConfig() {
@@ -50,6 +56,8 @@ func initConfig() {
 
 	viper.AutomaticEnv()
 	viper.ReadInConfig()
+
+	back.Init()
 }
 
 func promptForConfirmation(text string) bool {
