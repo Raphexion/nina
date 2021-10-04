@@ -9,7 +9,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewEntryCmd(m backend.Backend) *cobra.Command {
+func NewEntryCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:     "entries",
 		Aliases: []string{"entry"},
@@ -18,7 +18,7 @@ func NewEntryCmd(m backend.Backend) *cobra.Command {
 	listCmd := &cobra.Command{
 		Use:   "list",
 		Short: "List all entries",
-		Run:   BackendRunCmd(m, listEntriesCmd),
+		Run:   BackendRunCmd(listEntriesCmd),
 	}
 
 	rootCmd.AddCommand(listCmd)

@@ -12,7 +12,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
-func NewTimerCmd(m backend.Backend) *cobra.Command {
+func NewTimerCmd() *cobra.Command {
 	rootCmd := &cobra.Command{
 		Use:     "timers",
 		Aliases: []string{"timer"},
@@ -22,56 +22,56 @@ func NewTimerCmd(m backend.Backend) *cobra.Command {
 		Use:   "list",
 		Short: "List all project timers",
 		Args:  cobra.NoArgs,
-		Run:   BackendRunCmd(m, listCmdFunc),
+		Run:   BackendRunCmd(listCmdFunc),
 	}
 
 	pauseCmd := &cobra.Command{
 		Use:   "pause",
 		Short: "Pause active project timer",
 		Args:  cobra.NoArgs,
-		Run:   BackendRunCmd(m, pauseCmdFunc),
+		Run:   BackendRunCmd(pauseCmdFunc),
 	}
 
 	unpauseCmd := &cobra.Command{
 		Use:   "unpause",
 		Short: "Unpause a paused project timer",
 		Args:  cobra.NoArgs,
-		Run:   BackendRunCmd(m, unpauseCmdFunc),
+		Run:   BackendRunCmd(unpauseCmdFunc),
 	}
 
 	noteCmd := &cobra.Command{
 		Use:   "note text",
 		Short: "Append a note to a timer",
 		Args:  cobra.NoArgs,
-		Run:   BackendRunCmd(m, noteCmdFunc),
+		Run:   BackendRunCmd(noteCmdFunc),
 	}
 
 	createCmd := &cobra.Command{
 		Use:   "create",
 		Short: "Create a timer for a project",
 		Args:  cobra.NoArgs,
-		Run:   BackendRunCmd(m, createCmdFunc),
+		Run:   BackendRunCmd(createCmdFunc),
 	}
 
 	logCmd := &cobra.Command{
 		Use:   "log",
 		Short: "Log and finish timer for a given project",
 		Args:  cobra.NoArgs,
-		Run:   BackendRunCmd(m, logCmdFunc),
+		Run:   BackendRunCmd(logCmdFunc),
 	}
 
 	deleteCmd := &cobra.Command{
 		Use:   "delete",
 		Short: "Delete a timer for a project",
 		Args:  cobra.NoArgs,
-		Run:   BackendRunCmd(m, deleteCmdFunc),
+		Run:   BackendRunCmd(deleteCmdFunc),
 	}
 
 	adjustCmd := &cobra.Command{
 		Use:   "adjust",
 		Short: "Adjust the time for a project",
 		Args:  cobra.NoArgs,
-		Run:   BackendRunCmd(m, adjustCmdFunc),
+		Run:   BackendRunCmd(adjustCmdFunc),
 	}
 
 	rootCmd.AddCommand(listCmd)
