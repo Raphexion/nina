@@ -34,6 +34,7 @@ func init() {
 	rootCmd.AddCommand(NewTimerCmd())
 	rootCmd.AddCommand(NewProjectCmd())
 	rootCmd.AddCommand(NewEntryCmd())
+	rootCmd.AddCommand(NewWorkdayCmd())
 }
 
 func initConfig() {
