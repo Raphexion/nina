@@ -4,7 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
-	"nina/mid"
+	"nina/backend"
 	"nina/noko"
 	"nina/tui"
 	"nina/utils"
@@ -22,56 +22,56 @@ func NewTimerCmd() *cobra.Command {
 		Use:   "list",
 		Short: "List all project timers",
 		Args:  cobra.NoArgs,
-		Run:   listCmdFunc,
+		Run:   BackendRunCmd(listCmdFunc),
 	}
 
 	pauseCmd := &cobra.Command{
 		Use:   "pause",
 		Short: "Pause active project timer",
 		Args:  cobra.NoArgs,
-		Run:   pauseCmdFunc,
+		Run:   BackendRunCmd(pauseCmdFunc),
 	}
 
 	unpauseCmd := &cobra.Command{
 		Use:   "unpause",
 		Short: "Unpause a paused project timer",
 		Args:  cobra.NoArgs,
-		Run:   unpauseCmdFunc,
+		Run:   BackendRunCmd(unpauseCmdFunc),
 	}
 
 	noteCmd := &cobra.Command{
 		Use:   "note text",
 		Short: "Append a note to a timer",
 		Args:  cobra.NoArgs,
-		Run:   noteCmdFunc,
+		Run:   BackendRunCmd(noteCmdFunc),
 	}
 
 	createCmd := &cobra.Command{
 		Use:   "create",
 		Short: "Create a timer for a project",
 		Args:  cobra.NoArgs,
-		Run:   createCmdFunc,
+		Run:   BackendRunCmd(createCmdFunc),
 	}
 
 	logCmd := &cobra.Command{
 		Use:   "log",
 		Short: "Log and finish timer for a given project",
 		Args:  cobra.NoArgs,
-		Run:   logCmdFunc,
+		Run:   BackendRunCmd(logCmdFunc),
 	}
 
 	deleteCmd := &cobra.Command{
 		Use:   "delete",
 		Short: "Delete a timer for a project",
 		Args:  cobra.NoArgs,
-		Run:   deleteCmdFunc,
+		Run:   BackendRunCmd(deleteCmdFunc),
 	}
 
 	adjustCmd := &cobra.Command{
 		Use:   "adjust",
 		Short: "Adjust the time for a project",
 		Args:  cobra.NoArgs,
-		Run:   adjustCmdFunc,
+		Run:   BackendRunCmd(adjustCmdFunc),
 	}
 
 	rootCmd.AddCommand(listCmd)
@@ -86,34 +86,34 @@ func NewTimerCmd() *cobra.Command {
 	return rootCmd
 }
 
-func listCmdFunc(cmd *cobra.Command, args []string) {
-	timers, err := mid.GetTimers()
+func listCmdFunc(m backend.Backend) {
+	timers, err := m.GetTimers()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	for _, timer := range timers {
-		outputTimer(&timer)
+		outputTimer(m, &timer)
 	}
 }
 
-func pauseCmdFunc(cmd *cobra.Command, args []string) {
-	timer, err := mid.GetRunningTimer()
+func pauseCmdFunc(m backend.Backend) {
+	timer, err := m.GetRunningTimer()
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err = mid.PauseTimer(timer); err != nil {
+	if err = m.PauseTimer(timer); err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Paused %s\n", timer.Project.Name)
+	fmt.Fprintf(m, "Paused %s\n", timer.Project.Name)
 }
 
-func unpauseCmdFunc(cmd *cobra.Command, args []string) {
-	timers, err := mid.GetTimersWithState("paused")
+func unpauseCmdFunc(m backend.Backend) {
+	timers, err := m.GetTimersWithState("paused")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -123,25 +123,25 @@ func unpauseCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	err = mid.PauseRunningTimer()
+	err = m.PauseRunningTimer()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	if err = mid.StartTimer(timer); err != nil {
+	if err = m.StartTimer(timer); err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Unpaused %s\n", timer.Project.Name)
+	fmt.Fprintf(m, "Unpaused %s\n", timer.Project.Name)
 }
 
-func noteCmdFunc(cmd *cobra.Command, args []string) {
-	timers, err := mid.GetTimers()
+func noteCmdFunc(m backend.Backend) {
+	timers, err := m.GetTimers()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	timer, err := selectATimer("Pick a timer to unpause", timers)
+	timer, err := selectATimer("Pick a timer to note", timers)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -151,16 +151,16 @@ func noteCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	err = mid.SetDescription(timer, description)
+	err = m.SetDescription(timer, description)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("New note: %s\n", description)
+	fmt.Fprintf(m, "New note: %s\n", description)
 }
 
-func createCmdFunc(cmd *cobra.Command, args []string) {
-	projects, err := mid.GetSomeProjects(false)
+func createCmdFunc(m backend.Backend) {
+	projects, err := m.GetSomeProjects(false)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -170,21 +170,21 @@ func createCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	err = mid.PauseRunningTimer()
+	err = m.PauseRunningTimer()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	_, err = mid.CreateTimer(project.Name)
+	_, err = m.CreateTimer(project)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Printf("Created and started timer for project: %s\n", project.Name)
+	fmt.Fprintf(m, "Created and started timer for project: %s\n", project.Name)
 }
 
-func logCmdFunc(cmd *cobra.Command, args []string) {
-	timers, err := mid.GetTimers()
+func logCmdFunc(m backend.Backend) {
+	timers, err := m.GetTimers()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -194,21 +194,21 @@ func logCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	if err = mid.LogTimer(timer); err != nil {
+	if err = m.LogTimer(timer); err != nil {
 		log.Fatal(err)
 	}
 
 	timer.State = "finished"
-	outputTimer(timer)
+	outputTimer(m, timer)
 }
 
-func deleteCmdFunc(cmd *cobra.Command, args []string) {
-	timers, err := mid.GetTimers()
+func deleteCmdFunc(m backend.Backend) {
+	timers, err := m.GetTimers()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	timer, err := selectATimer("Pick a timer to log", timers)
+	timer, err := selectATimer("Pick a timer to delete", timers)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -219,16 +219,16 @@ func deleteCmdFunc(cmd *cobra.Command, args []string) {
 		return
 	}
 
-	if err = mid.DeleteTimer(timer); err != nil {
+	if err = m.DeleteTimer(timer); err != nil {
 		log.Fatal(err)
 	}
 
 	timer.State = "deleted"
-	outputTimer(timer)
+	outputTimer(m, timer)
 }
 
-func adjustCmdFunc(cmd *cobra.Command, args []string) {
-	timers, err := mid.GetTimers()
+func adjustCmdFunc(m backend.Backend) {
+	timers, err := m.GetTimers()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -248,15 +248,15 @@ func adjustCmdFunc(cmd *cobra.Command, args []string) {
 		log.Fatal(err)
 	}
 
-	err = addOrSubMinutesOnTimer(timer, minutes)
+	err = addOrSubMinutesOnTimer(m, timer, minutes)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 }
 
-func addOrSubMinutesOnTimer(timer *noko.Timer, minutes int) error {
-	err := mid.AddOrSubTimer(timer, minutes)
+func addOrSubMinutesOnTimer(m backend.Backend, timer *noko.Timer, minutes int) error {
+	err := m.AddOrSubTimer(timer, minutes)
 	if err != nil {
 		return err
 	}
@@ -264,11 +264,12 @@ func addOrSubMinutesOnTimer(timer *noko.Timer, minutes int) error {
 	return nil
 }
 
-func outputTimer(timer *noko.Timer) {
+func outputTimer(m backend.Backend, timer *noko.Timer) {
 	minutes := timer.Seconds / 60
 	hours := minutes / 60
 	minutes -= hours * 60
-	fmt.Printf("%-30s %2dh%02d, %8s: %s\n", timer.Project.Name, hours, minutes, timer.State, timer.Description)
+
+	fmt.Fprintf(m, "%-30s %2dh%02d, %8s: %s\n", timer.Project.Name, hours, minutes, timer.State, timer.Description)
 }
 
 func selectATimer(title string, timers []noko.Timer) (*noko.Timer, error) {
