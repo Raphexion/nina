@@ -146,7 +146,8 @@ func noteCmdFunc(m backend.Backend) {
 		log.Fatal(err)
 	}
 
-	description, err := tui.RunInput("Note", timer.Description, "I worked on ...")
+	title := fmt.Sprintf("Note: %s", timer.Project.Name)
+	description, err := tui.RunInput(title, timer.Description, "I worked on ...")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -238,7 +239,8 @@ func adjustCmdFunc(m backend.Backend) {
 		log.Fatal(err)
 	}
 
-	format, err := tui.RunInput("How much to adjust", "", "-1h23m")
+	title := fmt.Sprintf("Adjust: %s", timer.Project.Name)
+	format, err := tui.RunInput(title, "", "-1h23m")
 	if err != nil {
 		log.Fatal(err)
 	}
