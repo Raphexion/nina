@@ -167,10 +167,18 @@ func (m *RealBackend) GetSomeProjects(withTimer bool) ([]noko.Project, error) {
 }
 
 func (m *RealBackend) GetEntries() ([]noko.Entry, error) {
+	return m.getEntries(false)
+}
+
+func (m *RealBackend) GetMyEntries() ([]noko.Entry, error) {
+	return m.getEntries(true)
+}
+
+func (m *RealBackend) getEntries(currentUser bool) ([]noko.Entry, error) {
 	client := noko.NewClient()
 	ctx, cancel := standardContext()
 	defer cancel()
-	return client.GetEntries(ctx, false)
+	return client.GetEntries(ctx, currentUser)
 }
 
 func standardContext() (context.Context, context.CancelFunc) {

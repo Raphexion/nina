@@ -26,6 +26,7 @@ type Backend interface {
 
 	// Entries
 	GetEntries() ([]noko.Entry, error)
+	GetMyEntries() ([]noko.Entry, error)
 
 	// Output
 	Write(p []byte) (n int, err error)

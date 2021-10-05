@@ -9,10 +9,11 @@ import (
 var ErrNotImplemented = errors.New("not implemented")
 
 type MockBackend struct {
-	Projects []noko.Project
-	Timers   []noko.Timer
-	Entries  []noko.Entry
-	Output   *bytes.Buffer
+	Projects  []noko.Project
+	Timers    []noko.Timer
+	Entries   []noko.Entry
+	MyEntries []noko.Entry
+	Output    *bytes.Buffer
 }
 
 func (m *MockBackend) Init() error {
@@ -82,4 +83,8 @@ func (m *MockBackend) GetSomeProjects(withTimer bool) ([]noko.Project, error) {
 
 func (m *MockBackend) GetEntries() ([]noko.Entry, error) {
 	return m.Entries, nil
+}
+
+func (m *MockBackend) GetMyEntries() ([]noko.Entry, error) {
+	return m.MyEntries, nil
 }
