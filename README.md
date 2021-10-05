@@ -14,11 +14,21 @@
 [Noko](https://nokotime.com/) is a time tracking software tool.
 Nina is a command-line tool to directly interact with Noko through the Noko API.
 
-In Noko, each project has a timer per user.
-Which means that if your organization has two projects: Sales and Development and three employees: Anna, Bengt and Carolina.
-Then there will be six potential timers.
+In Noko, each project has a timer. However, it is tied to specific user.
+For example, if your organization has two projects: Sales and R&D and three employees: Anna, Bengt and Carolina.
+Then are six timers.
 
-That means, that if you are Anna. When you want to start/pause/log a timer, you actually only the project name.
+| Person   | Project |
+|----------|---------|
+| Anna     | Sales   |
+| Anna     | R&D     |
+| Bengt    | Sales   |
+| Bengt    | R&D     |
+| Carolina | Sales   |
+| Carolina | R&D     |
+
+
+That means, that if you are Anna. When you want to start/pause/log a timer, you actually only need the project name.
 This timer will not conflict with Bengt's and Carolina's timers for the same project.
 
 ## Download
