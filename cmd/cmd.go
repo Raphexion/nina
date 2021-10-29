@@ -35,6 +35,7 @@ func init() {
 	rootCmd.AddCommand(NewProjectCmd())
 	rootCmd.AddCommand(NewEntryCmd())
 	rootCmd.AddCommand(NewWorkdayCmd())
+	rootCmd.AddCommand(NewWorkweekCmd())
 }
 
 func initConfig() {
