@@ -24,7 +24,7 @@ func (m *selectorModel) down() {
 	}
 }
 
-func (m selectorModel) Result() int {
+func (m selectorModel) result() int {
 	return m.cursor
 }
 
@@ -82,5 +82,5 @@ func RunTuiSelector(title string, choices []string) (int, error) {
 		return 0, err
 	}
 
-	return model.(selectorModel).Result(), nil
+	return model.(selectorModel).result(), nil
 }

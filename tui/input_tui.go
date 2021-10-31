@@ -15,7 +15,7 @@ type inputModel struct {
 	err       error
 }
 
-func (m inputModel) Result() string {
+func (m inputModel) result() string {
 	return m.textInput.Value()
 }
 
@@ -72,5 +72,5 @@ func RunInput(title, text, placeholder string) (string, error) {
 		return "", err
 	}
 
-	return model.(inputModel).Result(), nil
+	return model.(inputModel).result(), nil
 }
