@@ -77,7 +77,7 @@ func (m selectorModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 func RunTuiSelector(title string, choices []string) (int, error) {
 	p := tea.NewProgram(initialSelectorModel(title, choices))
-	model, err := p.StartM()
+	model, err := p.StartReturningModel()
 	if err != nil {
 		return 0, err
 	}

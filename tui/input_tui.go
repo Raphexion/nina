@@ -67,7 +67,7 @@ func (m inputModel) View() string {
 
 func RunInput(title, text, placeholder string) (string, error) {
 	p := tea.NewProgram(initialInputModel(title, text, placeholder))
-	model, err := p.StartM()
+	model, err := p.StartReturningModel()
 	if err != nil {
 		return "", err
 	}
